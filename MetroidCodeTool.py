@@ -23,7 +23,9 @@ def MetDecode(encoded : str) -> int:
     retval = 0                                          # create return value
     for char in encoded:                                # for each character in code
         retval <<= 6                                    # push read characters back
-        retval += Metlib.index(char)                    # evaluate character
+        try: retval += Metlib.index(char)               # evaluate character
+        except IndexError if char == " " else None:     # handle misc space character
+            retval  = retval | 0xff                     # set all lower bits
     return retval                                       # return decoded data
 
 def CalculateChecksum(contents : int ) -> int:
