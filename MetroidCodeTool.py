@@ -63,7 +63,7 @@ def autodecode(encoded : str) -> dict:
     raw = MetDecode(encoded)                            # decode into raw paylaod
     checksum = raw&0xff                                 # retrieve checksum
     shiftbyte = (raw>>8)&0xff                           # retrieve shift byte
-    contents = shiftbits(encoded>>16, -shiftbyte)       # decode contents
+    contents = shiftbits(raw>>16, -shiftbyte)           # decode contents
 
     if CalculateChecksum(contents) != checksum:         # if checksum fails
         raise Exception("Checksum Mismatch!")           # code is broken, will not work
