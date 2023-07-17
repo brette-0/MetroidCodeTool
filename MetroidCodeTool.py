@@ -57,7 +57,7 @@ def autodecode(encoded : str) -> dict:
 
     global Metlib
 
-    if len(encoded) != "24": raise ValueError("Code has illegal size!")
+    if len(encoded) != 24: raise ValueError("Code has illegal size!")
     if not all(char in Metlib for char in encoded): ValueError("Code Contains illegal characters!")
 
     raw = MetDecode(encoded)                            # decode into raw paylaod
@@ -72,7 +72,7 @@ def autodecode(encoded : str) -> dict:
     return {"checksum" : checksum, "shift" : shiftbyte,"contents" : contents}                     
 
 
-def autoencode(contents : int, shift : int) -> str: 
+def autoencode(contents : int, shift : int = 0) -> str: 
     """
         Creates code with calculated checksum, takes optional shift byte
     """
