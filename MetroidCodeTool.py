@@ -35,7 +35,7 @@ def CalculateChecksum(contents : int ) -> int:
     while checksum:                                     # while contents not empty
         checksum += contents & 0xff                     # sum final byte
         checksum >>= 8                                  # trim final byte
-    return checksum%0xff                                # return byte
+    return checksum&0xff                                # return byte
 
 def shiftbits(unshifted : int, shift : int) -> int:
     """
