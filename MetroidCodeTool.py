@@ -32,9 +32,9 @@ def CalculateChecksum(contents : int ) -> int:
     """
 
     checksum = 0
-    while checksum:                                     # while contents not empty
+    while contents:                                     # while contents not empty
         checksum += contents & 0xff                     # sum final byte
-        checksum >>= 8                                  # trim final byte
+        contents >>= 8                                  # trim final byte
     return checksum&0xff                                # return byte
 
 def shiftbits(unshifted : int, shift : int) -> int:
@@ -63,7 +63,6 @@ def autodecode(encoded : str) -> dict:
     checksum = raw&0xff                                 # retrieve checksum
     shiftbyte = (raw>>8)&0xff                           # retrieve shift byte
     contents = shiftbits(raw>>16, -shiftbyte)           # decode contents
-
     if CalculateChecksum(contents) != checksum:         # if checksum fails
         raise Exception("Checksum Mismatch!")           # code is broken, will not work
     
