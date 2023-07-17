@@ -7,11 +7,11 @@ def MetEncode(decoded : int) -> str:
         Encodes raw metroid contents into metroid library form
     """
 
-    global metlib                                       # access global metroid library
+    global Metlib                                       # access global metroid library
     retval = str()                                      # create return value
     while decoded:                                      # while data remaining to be decoded
-        retval += metlib[decoded&0b111111]              # encode last byte
-        retval >>= 6                                    # trim off last byte
+        retval += Metlib[decoded&0b111111]              # encode last byte
+        decoded >>= 6                                   # trim off last byte
     return retval[::-1]                                 # return reversed string
 
 def MetDecode(encoded : str) -> int:
@@ -19,11 +19,11 @@ def MetDecode(encoded : str) -> int:
         Decodes metroid library form password into raw contects
     """
 
-    global metlib                                       # access global metroid library
+    global Metlib                                       # access global metroid library
     retval = 0                                          # create return value
     for char in encoded:                                # for each character in code
         retval <<= 6                                    # push read characters back
-        retval += metlib.index(char)                    # evaluate character
+        retval += Metlib.index(char)                    # evaluate character
     return retval                                       # return decoded data
 
 def CalculateChecksum(contents : int ) -> int:
@@ -43,8 +43,8 @@ def shiftbits(unshifted : int, shift : int) -> int:
     """
 
     # Set up rotational lambdas
-    encode = lambda: ((unshifted << shift) | (unshifted >> (unshifted.bit_length() - shift))) & ((1 << unshifted.bit_length()) - 1)
-    decode = lambda: ((unshifted >> shift) | (unshifted << (unshifted.bit_length() - shift))) & ((1 << unshifted.bit_length()) - 1)
+    decode = lambda: ((unshifted << shift) | (unshifted >> (unshifted.bit_length() - shift))) & ((1 << unshifted.bit_length()) - 1)
+    encode = lambda: ((unshifted >> shift) | (unshifted << (unshifted.bit_length() - shift))) & ((1 << unshifted.bit_length()) - 1)
     
     # dicate direction by mode of operation
     return (encode,decode)[shift < 0]() 
