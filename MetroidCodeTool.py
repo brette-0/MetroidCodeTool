@@ -32,7 +32,7 @@ def CalculateChecksum(contents : int ) -> int:
     """
 
     checksum = 0
-    while contents:                                     # while contents not empty
+    while checksum:                                     # while contents not empty
         checksum += contents & 0xff                     # sum final byte
         checksum >>= 8                                  # trim final byte
     return checksum%0xff                                # return byte
@@ -43,9 +43,8 @@ def shiftbits(unshifted : int, shift : int) -> int:
     """
 
     # Set up rotational lambdas
-    decode = lambda: ((unshifted << shift) | (unshifted >> (unshifted.bit_length() - shift))) & ((1 << unshifted.bit_length()) - 1)
-    encode = lambda: ((unshifted >> shift) | (unshifted << (unshifted.bit_length() - shift))) & ((1 << unshifted.bit_length()) - 1)
-    
+    decode = lambda: ((unshifted << (-shift)&0b1111) | (unshifted >> (128 - (-shift)&0b1111))) & ((1 << 128) - 1)
+    encode = lambda: ((unshifted >> shift&0b1111) | (unshifted << (128 - shift&0b1111))) & ((1 << 128) - 1)
     # dicate direction by mode of operation
     return (encode,decode)[shift < 0]() 
 
@@ -69,7 +68,7 @@ def autodecode(encoded : str) -> dict:
         raise Exception("Checksum Mismatch!")           # code is broken, will not work
     
     # else return formatted data
-    return {"checksum" : checksum, "shift" : shiftbyte,"contents" : contents}                     
+    return {"checksum" : checksum, "shift" : shiftbyte, "contents" : contents}                     
 
 
 def autoencode(contents : int, shift : int = 0) -> str: 
