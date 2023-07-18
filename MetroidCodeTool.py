@@ -45,8 +45,8 @@ def shiftbits(unshifted : int, shift : int) -> int:
     """
 
     # Set up rotational lambdas
-    decode = lambda: ((unshifted << (-shift)&0b1111) | (unshifted >> (128 - (-shift)&0b1111))) & ((1 << 128) - 1)
-    encode = lambda: ((unshifted >> shift&0b1111) | (unshifted << (128 - shift&0b1111))) & ((1 << 128) - 1)
+    decode = lambda: ((unshifted << (-shift)&0x7f) | (unshifted >> (128 - (-shift)&0x7f))) & ((1 << 128) - 1)
+    encode = lambda: ((unshifted >> shift&0x7f) | (unshifted << (128 - shift&0x7f))) & ((1 << 128) - 1)
     # dicate direction by mode of operation
     return (encode,decode)[shift < 0]() 
 
@@ -65,6 +65,8 @@ def autodecode(encoded : str) -> dict:
     checksum = raw&0xff                                 # retrieve checksum
     shiftbyte = (raw>>8)&0xff                           # retrieve shift byte
     contents = shiftbits(raw>>16, -shiftbyte)           # decode contents
+    print(CalculateChecksum(contents))
+    print(checksum)
     if CalculateChecksum(contents) != checksum:         # if checksum fails
         raise Exception("Checksum Mismatch!")           # code is broken, will not work
     
