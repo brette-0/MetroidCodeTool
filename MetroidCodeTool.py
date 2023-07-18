@@ -64,9 +64,7 @@ def autodecode(encoded : str) -> dict:
     raw = MetDecode(encoded)                            # decode into raw paylaod
     checksum = raw&0xff                                 # retrieve checksum
     shiftbyte = (raw>>8)&0xff                           # retrieve shift byte
-    contents = shiftbits(raw>>8, -shiftbyte)           # decode contents
-    print(CalculateChecksum(contents))
-    print(checksum)
+    contents = shiftbits(raw>>8, -shiftbyte)            # decode contents
     if CalculateChecksum(contents) != checksum:         # if checksum fails
         raise Exception("Checksum Mismatch!")           # code is broken, will not work
     
@@ -87,7 +85,8 @@ def autoencode(contents : int, shift : int = 0) -> str:
     if contents.bit_length() != 128:
         raise ValueError("Illegal contents size!")      # raw contents impossible?
     
-    contents = shiftbits(contents, shift&0x7f)          # shift contents
-    contents = (contents<<16)+(shift<<8)+CalculateChecksum(contents)
+    contents <<= 8
+    contents = shiftbits(contents+shift, shift%136)     # shift contents
+    contents = (contents<<8)+CalculateChecksum(contents)
 
     return MetEncode(contents)
