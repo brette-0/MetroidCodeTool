@@ -69,7 +69,7 @@ def autodecode(encoded : str) -> dict:
         raise Exception("Checksum Mismatch!")           # code is broken, will not work
     
     # else return formatted data
-    return {"checksum" : checksum, "shift" : shiftbyte, "contents" : contents}                     
+    return {"checksum" : checksum , "shift" : shiftbyte, "contents" : contents>>8}                     
 
 
 def autoencode(contents : int, shift : int = 0) -> str: 
@@ -85,8 +85,8 @@ def autoencode(contents : int, shift : int = 0) -> str:
     if contents.bit_length() != 128:
         raise ValueError("Illegal contents size!")      # raw contents impossible?
     
-    contents <<= 8
-    contents = shiftbits(contents+shift, shift%136)     # shift contents
+    contents <<= 8;contents += shift                    # partial format
+    contents = shiftbits(contents, shift%136)           # shift contents
     contents = (contents<<8)+CalculateChecksum(contents)
 
-    return MetEncode(contents)
+    return MetEncode(contents)                          # return metroid library encoded result
