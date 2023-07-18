@@ -45,8 +45,8 @@ def shiftbits(unshifted : int, shift : int) -> int:
     """
 
     # Set up rotational lambdas
-    decode = lambda: ((unshifted << (-shift)&0x7f) | (unshifted >> (128 - (-shift)&0x7f))) & ((1 << 128) - 1)
-    encode = lambda: ((unshifted >> shift&0x7f) | (unshifted << (128 - shift&0x7f))) & ((1 << 128) - 1)
+    decode = lambda: ((unshifted << (-shift)%136) | (unshifted >> (136 - (-shift)%136))) & ((1 << 136) - 1)
+    encode = lambda: ((unshifted >> shift%136) | (unshifted << (136 - shift%136))) & ((1 << 136) - 1)
     # dicate direction by mode of operation
     return (encode,decode)[shift < 0]()
 
@@ -64,7 +64,7 @@ def autodecode(encoded : str) -> dict:
     raw = MetDecode(encoded)                            # decode into raw paylaod
     checksum = raw&0xff                                 # retrieve checksum
     shiftbyte = (raw>>8)&0xff                           # retrieve shift byte
-    contents = shiftbits(raw>>16, -shiftbyte)           # decode contents
+    contents = shiftbits(raw>>8, -shiftbyte)           # decode contents
     print(CalculateChecksum(contents))
     print(checksum)
     if CalculateChecksum(contents) != checksum:         # if checksum fails
@@ -85,9 +85,9 @@ def autoencode(contents : int, shift : int = 0) -> str:
         raise TypeError("Invalid arguement type for one of given arguements!")
     
     if contents.bit_length() != 128:
-        raise ValueError("Illegal contents size!")
+        raise ValueError("Illegal contents size!")      # raw contents impossible?
     
-    contents = shiftbits(contents, shift&0x7f)           # shift contents
+    contents = shiftbits(contents, shift&0x7f)          # shift contents
     contents = (contents<<16)+(shift<<8)+CalculateChecksum(contents)
 
     return MetEncode(contents)
