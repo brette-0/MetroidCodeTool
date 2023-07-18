@@ -48,7 +48,7 @@ def shiftbits(unshifted : int, shift : int) -> int:
     decode = lambda: ((unshifted << (-shift)&0x7f) | (unshifted >> (128 - (-shift)&0x7f))) & ((1 << 128) - 1)
     encode = lambda: ((unshifted >> shift&0x7f) | (unshifted << (128 - shift&0x7f))) & ((1 << 128) - 1)
     # dicate direction by mode of operation
-    return (encode,decode)[shift < 0]() 
+    return (encode,decode)[shift < 0]()
 
 
 def autodecode(encoded : str) -> dict:
@@ -87,7 +87,7 @@ def autoencode(contents : int, shift : int = 0) -> str:
     if contents.bit_length() != 128:
         raise ValueError("Illegal contents size!")
     
-    contents = shiftbits(contents, shift&0xf)
-    contents = (contents<<8)+CalculateChecksum(contents)
+    contents = shiftbits(contents, shift&0x7f)           # shift contents
+    contents = (contents<<16)+(shift<<8)+CalculateChecksum(contents)
 
     return MetEncode(contents)
